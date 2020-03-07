@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, Request, status
 from mongoengine import connect
 import uuid
 import json
@@ -69,7 +69,15 @@ async def read_item(skip: int = 0, limit: int = 10):
 
 
 @app.post("/api/cars")
-async def create_item(payload: CarTypes):
+async def create_item(payload: CarTypes,  request: Request, response: Response):
+
+    # Get token
+    token = request.headers.get('token')
+    
+    # Check if user is valid
+    if token is None:
+         response.status_code = status.HTTP_401_UNAUTHORIZED
+         return { 'msg': "Access denied!" }
 
     # Create car record
     car = Car()
