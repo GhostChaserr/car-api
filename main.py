@@ -50,3 +50,21 @@ def list_cars():
 
     # Return cars
     return json.loads(json_data)
+
+
+
+# Get single car
+@app.get("/api/cars/{item_id}")
+async def read_item(item_id: str):
+    return {"item_id": item_id}
+
+
+# Using query paramenters
+@app.get("/api/v1/cars")
+async def read_item(skip: int = 0, limit: int = 10):
+    return { 'values': { f'{skip}': skip, f'{limit}': limit } }
+
+# Add new car
+@app.post("/api/cars")
+def create_car():
+    return {'message': 'posting new car'}
