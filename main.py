@@ -13,6 +13,9 @@ from models.car import Car
 from models.user import User
 from models.shared.photo import Photo
 
+# Load types
+from models.payloads.car import CarTypes
+
 
 @app.get("/")
 def read_root():
@@ -64,7 +67,39 @@ async def read_item(item_id: str):
 async def read_item(skip: int = 0, limit: int = 10):
     return { 'values': { f'{skip}': skip, f'{limit}': limit } }
 
-# Add new car
+
 @app.post("/api/cars")
-def create_car():
-    return {'message': 'posting new car'}
+async def create_item(payload: CarTypes):
+
+    # Create car record
+    car = Car()
+    car.title = payload.title
+    car.model = payload.model
+    car.tags = payload.tags
+
+    # save photos
+    photos = []
+    for uploadedPhoto in payload.photos:
+
+        # Initialize Photo model instance
+        photo = Photo()
+
+        # Generate new photo embedded object
+        photo._id = uuid.uuid4()
+        photo.filename = uploadedPhoto.filename
+        photo.path = uploadedPhoto.path
+
+    # Save embedded photos
+    car.photos = []
+
+    # Save car to database
+    car.save()
+    
+    # Response context
+    response = {
+       'status': 200,
+       'error': '',
+    }
+
+    # Return car back
+    return response
