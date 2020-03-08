@@ -5,8 +5,8 @@ from pydantic import BaseModel
 class AvatarType(BaseModel):
 
   # Fields   
-  path: str
-  filename: str
+  path: str = None
+  filename: str = None
 
 class Avatar(mongoengine.EmbeddedDocument):
 

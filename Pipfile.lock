@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "90a502f8422da9e582a8c08c307f478b0f3050d5ecb14947a2a890377696fb3e"
+            "sha256": "4c3233206d3ea81ced4e90f158a8dd9b0c70514d7f2139f8e22feb9474e41ba0"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -94,6 +94,14 @@
                 "sha256:4bc6d6a1238b7615b266ada57e0618568066f57dd6fa967d1290ec9309b2f2f1"
             ],
             "version": "==0.9.0"
+        },
+        "libgravatar": {
+            "hashes": [
+                "sha256:3da09feed1abbb903463a4c6c3de80fdbf83490fbeee2ff55d39a3a80878318f",
+                "sha256:672116492aa483c957069ee2b3d130780fef2f5d49b2a3f8e16561bb2aa1c0db"
+            ],
+            "index": "pypi",
+            "version": "==0.2.3"
         },
         "mongoengine": {
             "hashes": [

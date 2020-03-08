@@ -45,7 +45,7 @@ class Query:
       # Query records
       records = Model.objects.only(*fields)[filters['start']:filters['end']]
       
-      # Conver to json
+      # Convert to json
       json_data = records.to_json()
 
       # Converts to list of dictionaries

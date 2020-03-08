@@ -8,12 +8,17 @@ from models.user import User, UserType
 from models.shared.avatar import Avatar, AvatarType
 from fastapi import Response, status
 import uuid
-from modules.Query import Query
+
 import mongoengine
+
+# Load helper modules
 from modules.Util import Util
+from modules.Auth import Auth
+from modules.Query import Query
 
 query_module = Query()
 util_module = Util()
+auth_module = Auth()
 
 @app.get("/api/users")
 def query_users(response: Response):
@@ -62,7 +67,7 @@ def create_user(userPayload: UserType, response: Response):
 
   # Throw err if email taken
   if email_taken:
-    response.status_code = status.HTTP_400_BAD_REQUEST
+    
     response_context = {
       'status': 400,
       'error': 'email taken',
@@ -81,16 +86,25 @@ def create_user(userPayload: UserType, response: Response):
 
   # Avatar
   avatar = Avatar()
+
+  # Generate sample avatar
   avatar._id = uuid.uuid4()
-  avatar.path = userPayload.avatar.path
-  avatar.filename = userPayload.avatar.filename
-  user.avatar = avatar
+  avatar.path = "sample-avatar"
+  avatar.filename = "sample-filename"
+  user.avatar = avatar 
 
   # Save user into database
   user.save()
 
+  # Auth fields
+  user_auth_fields = user.get_auth_fields()
+  
+  # Generate auth token
+  token = auth_module.generate_auth_token(payload={**user_auth_fields})
 
-  return { 'mg': 'registering user!' }
+  # Set response and return token
+  response.status_code = status.HTTP_201_CREATED
+  return util_module.generate_response_context(status=201, data=token, error=None)
 
 @app.put('/api/users/{id}')
 def update_user():

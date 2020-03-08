@@ -1,5 +1,10 @@
 import mongoengine
 import uuid
+import bcrypt
+import hashlib
+import base64
+
+
 
 
 # Load shared models
@@ -17,7 +22,7 @@ class UserType(BaseModel):
   email: str
   password: str
   username: str
-  avatar: AvatarType
+
 
 class User(mongoengine.Document):
 
@@ -38,6 +43,10 @@ class User(mongoengine.Document):
       ]
   }
 
+  # Fields needed for JWT
+  def get_auth_fields(self):
+    return { 'role': self.role, '_id': str(self._id) }
+
 
   # Override save method
   def save(self,  *args, **kwargs):
@@ -47,6 +56,15 @@ class User(mongoengine.Document):
 
     # Provide default role
     self.role = 'user'
+
+    # Encode current password
+    current_password = str.encode(self.password)
+
+    # Hash password
+    hashed = bcrypt.hashpw(current_password, bcrypt.gensalt(10))
+
+    # Update password
+    self.password = hashed.decode("utf-8") 
 
     # Proceed save
     super(User, self).save(*args, **kwargs)
