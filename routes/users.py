@@ -4,9 +4,9 @@
 # Load app
 from main import app
 import json
-from models.user import User, UserType
+from models.user import User, UserType, LoginType
 from models.shared.avatar import Avatar, AvatarType
-from fastapi import Response, status
+from fastapi import Response, Request, status
 import uuid
 
 import mongoengine
@@ -44,16 +44,18 @@ def query_users(response: Response):
 @app.get('/api/users/{id}')
 def query_user(id: str, response: Response):
 
-  try:
+  # Query user
+  user = query_module.query_by_id(Model=User, id=id, fields=('name', 'surname', 'avatar'))
 
-    user = User.objects.get(_id=id)
-    response.status_code = status.HTTP_200_OK
-    return { 'user': user }
-
-  except:
-
+  # Throw err if user was not found
+  if user is None:
     response.status_code = status.HTTP_404_NOT_FOUND
-    return { 'msg': 'user was not found' }
+    return util_module.generate_response_context(status=400, data=None, error='user was not found!')
+
+  # Return user
+  response.status_code = status.HTTP_200_OK
+  return util_module.generate_response_context(status=200, data=user, error=None)
+
 
 
 @app.post('/api/users')
@@ -106,6 +108,38 @@ def create_user(userPayload: UserType, response: Response):
   response.status_code = status.HTTP_201_CREATED
   return util_module.generate_response_context(status=201, data=token, error=None)
 
+
+# Login route
+@app.post('/api/users/login')
+def login_user(loginPayload: LoginType, response: Response):
+
+  # Check if email exists
+  user = query_module.query_by_email(email=loginPayload.email)
+
+  # Return error if user with given email was not found
+  if user is None:
+     response.status_code = status.HTTP_404_NOT_FOUND
+     return util_module.generate_response_context(status=404, error='user with given email was not found', data=None)
+
+
+  # Check password
+  pass_is_valid = auth_module.validate_password(loginPayload.password, user.password)
+
+  # Return error if password is invalid
+  if pass_is_valid == False:
+     response.status_code = status.HTTP_400_BAD_REQUEST
+     return util_module.generate_response_context(status=400, error='invalid password', data=None)
+
+  # Create token payload
+  token_payload = { 'role': user.role, '_id': str(user.id) }
+
+  # Generate token
+  token = auth_module.generate_auth_token(payload=token_payload)
+
+  # Return token
+  response.status_code = status.HTTP_200_OK
+  return util_module.generate_response_context(status=200, error=None, data=token)
+
 @app.put('/api/users/{id}')
 def update_user():
   return { 'msg': 'updating user!' }
@@ -114,10 +148,17 @@ def update_user():
 def delete_user():
   return { 'msg': 'deleting user' }
 
-@app.put('/api/users/login')
-def login_user():
-  return { 'mg': "login user" }
 
-@app.get('/api/users/me')
-def query_me():
-  return { 'mg' :"querying logged in user" }
+@app.get('/api/me')
+def query_me(request: Request, response: Response):
+  
+  # Query logged in user
+  user = auth_module.get_me(request=request)
+
+  if user is None:
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return util_module.generate_response_context(status=404, error='user was not found', data=None)
+
+  # Return logged in user data
+  response.status_code = status.HTTP_200_OK
+  return util_module.generate_response_context(status=200, error=None, data=user)

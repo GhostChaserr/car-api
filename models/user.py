@@ -14,6 +14,12 @@ from models.shared.avatar import Avatar, AvatarType
 from pydantic import BaseModel
 from typing import List, Dict
 
+
+# Login payload
+class LoginType(BaseModel):
+  email: str
+  password: str
+
 # User payload type
 class UserType(BaseModel):
   name: str

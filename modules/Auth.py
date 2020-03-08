@@ -11,12 +11,19 @@ import bcrypt
 # Load models
 from models.user import User
 
+# Load query module
+from modules.Query import Query
+
 class Auth:
 
   def __init__(self):
     
     # Get reference to auth token
     self.app_secret = os.environ.get('SECRET_KEY')
+
+    # Get refernce to modules
+    self.query_module = Query()
+
 
     self.validate_password(pass_to_validate='batsibatso', hashed_password="$2b$10$6uxiwQmv1B88Dfox0.mPZ.IjORPMNnUyZiuVGA8/QHRKPA2VLkKuW")
 
@@ -58,10 +65,28 @@ class Auth:
   def get_token(self, request):
     return request.headers.get('token')
  
+
+  # Get logged in user
+  def get_me(self, request):
+
+    # Extract token from header
+    token = self.get_token(request=request)
+
+    # Check if token was provided
+    if token == False or token == None:
+      return None
+
+    # Validate token
+    decoded_user = self.validate_token(token=token)
+
+    # Query user with given id
+    return self.query_module.query_by_id(Model=User, id=decoded_user['_id'], fields=('name', 'surname', 'avatar', 'username'))
+    
+
   # Verify token
   def validate_token(self, token):
     try:
-        decoded = jwt.decode(token, self.app_secret,  algorithm='HS256')
+        decoded = jwt.decode(token, self.app_secret, algorithms=['HS256'], verify=True)
         return decoded
     except jwt.InvalidTokenError:
       return None

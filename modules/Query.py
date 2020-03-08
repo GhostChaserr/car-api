@@ -26,14 +26,20 @@ class Query:
 
 
   # Query user by username
-  def query_by_id(self, Model, id):
+  def query_by_id(self, Model, id, fields):
 
     if id == False:
       raise ValueError("Provide id")
 
     try:
-      record = Model.objects.get(_id=id)
-      return record
+      record = Model.objects.only(*fields).get(_id=id)
+
+      # Convert
+      json_data = record.to_json()
+
+      # Dictify
+      return json.loads(json_data)
+
     except:
       return None
   

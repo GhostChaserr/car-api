@@ -7,3 +7,4 @@ PyJWT==1.7.1
 python-dotenv==0.12.0
 PyJWT==1.7.1
 libgravatar==0.2.3
+pydash==4.7.6
