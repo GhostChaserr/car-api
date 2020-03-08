@@ -3,14 +3,10 @@ import uuid
 import bcrypt
 import hashlib
 import base64
-
-
-
+import datetime
 
 # Load shared models
 from models.shared.avatar import Avatar, AvatarType
-
-# Load types
 from pydantic import BaseModel
 from typing import List, Dict
 
@@ -42,7 +38,7 @@ class User(mongoengine.Document):
   username = mongoengine.StringField()
   avatar = mongoengine.EmbeddedDocumentField(Avatar)
   role = mongoengine.StringField()
-
+  created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
   meta = {
     'indexes': [
         {'fields': ['email'], 'unique': True}

@@ -1,13 +1,14 @@
 import mongoengine
 import uuid
+import datetime
 
-# Load embedded model
-from models.shared.photo import Photo
-from pydantic import BaseModel
+# Load types
 from typing import List, Dict
 
-# Load photo types
-from models.shared.photo import PhotoType
+# Load user model
+from models.user import User
+from pydantic import BaseModel
+from models.shared.photo import PhotoType, Photo
 
 class CarType(BaseModel):
     title: str
@@ -23,6 +24,13 @@ class Car(mongoengine.Document):
   model = mongoengine.StringField()
   tags = mongoengine.ListField(mongoengine.StringField())
   photos = mongoengine.ListField(mongoengine.EmbeddedDocumentField(Photo))
+  user = mongoengine.UUIDField(binary=False)
+  created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
+  meta = {
+    'indexes': [
+        { 'fields': ['user'] }
+    ]
+  }
 
   # Override save method
   def save(self,  *args, **kwargs):

@@ -61,4 +61,13 @@ class Query:
       
       # Throw 500 error
       return None
+  
+  # Query related data
+  def query_related(self, Model, key, recordId):
+    try:
+      records = Model.objects(car=recordId)
+      json_data = records.to_json()
+      return json.loads(json_data)
+    except:
+      return None
 

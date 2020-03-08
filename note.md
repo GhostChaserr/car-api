@@ -4,9 +4,12 @@
 # App Timeline
 [X] server setup
   [] Routes
-    [x] GET - Fetching list of cars
-    [x] GET - Fetch single car
-    [x] POST - Register new car
+    [X] User routes
+      [x] GET  - Paginated list of users
+      [x] GET  - Single user
+      [x] POST - Register user
+      [x] POST - Login user
+      [x] GET  - Query logged in user
   [X] Authentication
     [x] Sign up
       [x] Password hashing
