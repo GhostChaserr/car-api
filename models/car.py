@@ -3,6 +3,17 @@ import uuid
 
 # Load embedded model
 from models.shared.photo import Photo
+from pydantic import BaseModel
+from typing import List, Dict
+
+# Load photo types
+from models.shared.photo import PhotoType
+
+class CarType(BaseModel):
+    title: str
+    model: str
+    photos: List[PhotoType]
+    tags: List[str]
 
 class Car(mongoengine.Document):
 
