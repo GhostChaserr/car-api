@@ -22,6 +22,9 @@ from models.shared.avatar import Avatar
 from pydantic import BaseModel
 
 
+class CommentType(BaseModel):
+  comment: str
+
 
 class CommentAuthor(mongoengine.EmbeddedDocument):
 

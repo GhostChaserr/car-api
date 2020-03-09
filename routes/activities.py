@@ -29,8 +29,3 @@ auth_module = Auth()
 @app.get("/api/user/{id}/activities")
 def query_user_activities():
   return { "msg" : "getting user actvities" }
-
-# Load all activities
-@app.get("/api/activities")
-def query_activities():
-  return { "msg": "getting all activites admin access" }

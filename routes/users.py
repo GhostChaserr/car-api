@@ -13,6 +13,7 @@ import mongoengine
 # Load models
 from models.user import User, UserType, LoginType
 from models.shared.avatar import Avatar, AvatarType
+from models.activity import Activty
 from models.order import Order
 
 
@@ -161,8 +162,8 @@ def query_me(request: Request, response: Response):
   user = auth_module.get_me(request=request)
 
   if user is None:
-    response.status_code = status.HTTP_404_NOT_FOUND
-    return util_module.generate_response_context(status=404, error='user was not found', data=None)
+    response.status_code = status.HTTP_401_UNAUTHORIZED
+    return util_module.generate_response_context(status=401, error='access denied!', data=None)
 
   # Return logged in user data
   response.status_code = status.HTTP_200_OK
@@ -170,7 +171,7 @@ def query_me(request: Request, response: Response):
 
 
 @app.get("/api/me/orders")
-def query_user_orders(request: Request, response: Response, total: int):
+def query_user_orders(request: Request, response: Response):
 
     # Get logged in user
     user = auth_module.get_me(request=request)
@@ -180,7 +181,26 @@ def query_user_orders(request: Request, response: Response, total: int):
        return util_module.generate_response_context(status=401, data=None, error="Access denied!")
       
     # Query logged in user orders
-    q_set = Order.objects(user__author="4bce3fd8-7c5a-4758-ad0e-a73ea0e4664c")
+    q_set = Order.objects(user__author=user["_id"])
     json_data = q_set.to_json()
+    orders = json.loads(json_data)
 
-    return { 'orders' : json.loads(json_data) }
+    response.status_code = status.HTTP_200_OK
+    return util_module.generate_response_context(status=200, data=orders, error=None)
+
+@app.get("/api/me/activities")
+def query_user_activities(request: Request, response: Response):
+
+  user = auth_module.get_me(request=request)
+
+  if user is None:
+    response.status_code = status.HTTP_401_UNAUTHORIZED
+    return util_module.generate_response_context(status=401, error="Access denied!", data=None)
+
+  # Query and JSONIFY
+  q_set = Activty.objects(user=user["_id"])
+  json_data = q_set.to_json()
+  user_activities = json.loads(json_data)
+
+  response.status_code = status.HTTP_401_UNAUTHORIZED
+  return util_module.generate_response_context(status=200, error=None, data=user_activities)

@@ -65,22 +65,20 @@ class Auth:
   def get_token(self, request):
     return request.headers.get('token')
  
-
   # Get logged in user
   def get_me(self, request):
 
     # Extract token from header
     token = self.get_token(request=request)
 
-    # Check if token was provided
-    if token == False or token == None:
+    if token is None:
       return None
-
+  
     # Validate token
     decoded_user = self.validate_token(token=token)
 
     # Query user with given id
-    return self.query_module.query_by_id(Model=User, id=decoded_user['_id'], fields=('name', 'surname', 'avatar', 'username'))
+    return self.query_module.query_by_id(Model=User, id=decoded_user['_id'], fields=('name', 'role', 'surname', 'avatar', 'username'))
     
 
   # Verify token
