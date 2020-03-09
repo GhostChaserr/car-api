@@ -11,12 +11,20 @@ from models.car import Car, CarType
 from models.comment import Comment, CommentAuthor
 from models.activity import Activty, ActivitySubject
 from models.order import OrderAuthor, OrderSubject, Order, OrderType
-
 import json
+
+# Load helper modules
 from modules.Query import Query
+from modules.Auth import Auth
+from modules.Util import Util
 from models.user import User
 
+
+# Construct modules
 query_module = Query()
+auth_module = Auth()
+util_module = Util()
+
 
 
 
@@ -109,9 +117,15 @@ async def comment_car(car_id: str):
 def create_order(order: OrderType, car_id: str, response: Response, request: Request):
 
   # Get logged in user
-  car = Car.objects.only("title", "model").get(_id=car_id)
-  user = User.objects.only("name", "surname", "_id").get(_id="4bce3fd8-7c5a-4758-ad0e-a73ea0e4664c")
+  user = auth_module.get_me(request=request)
 
+  if user is None:
+    response.status_code = status.HTTP_200_OK
+    return util_module.generate_response_context(status=401, data=None, error="Access denied!")
+      
+  # Get logged in user
+  car = Car.objects.only("title", "model").get(_id=car_id)
+  
   # Initialize new order
   order = Order()
   order.total = 200

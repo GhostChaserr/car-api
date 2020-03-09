@@ -170,8 +170,15 @@ def query_me(request: Request, response: Response):
 
 
 @app.get("/api/me/orders")
-def query_user_orders(response: Response, total: int):
+def query_user_orders(request: Request, response: Response, total: int):
 
+    # Get logged in user
+    user = auth_module.get_me(request=request)
+
+    if user is None:
+       response.status_code = status.HTTP_200_OK
+       return util_module.generate_response_context(status=401, data=None, error="Access denied!")
+      
     # Query logged in user orders
     q_set = Order.objects(user__author="4bce3fd8-7c5a-4758-ad0e-a73ea0e4664c")
     json_data = q_set.to_json()
