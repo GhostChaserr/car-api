@@ -4,12 +4,17 @@
 # Load app
 from main import app
 import json
-from models.user import User, UserType, LoginType
-from models.shared.avatar import Avatar, AvatarType
 from fastapi import Response, Request, status
 import uuid
-
 import mongoengine
+
+
+
+# Load models
+from models.user import User, UserType, LoginType
+from models.shared.avatar import Avatar, AvatarType
+from models.order import Order
+
 
 # Load helper modules
 from modules.Util import Util
@@ -162,3 +167,13 @@ def query_me(request: Request, response: Response):
   # Return logged in user data
   response.status_code = status.HTTP_200_OK
   return util_module.generate_response_context(status=200, error=None, data=user)
+
+
+@app.get("/api/me/orders")
+def query_user_orders(response: Response, total: int):
+
+    # Query logged in user orders
+    q_set = Order.objects(user__author="4bce3fd8-7c5a-4758-ad0e-a73ea0e4664c")
+    json_data = q_set.to_json()
+
+    return { 'orders' : json.loads(json_data) }

@@ -10,6 +10,7 @@ from models.shared.photo import Photo, PhotoType
 from models.car import Car, CarType
 from models.comment import Comment, CommentAuthor
 from models.activity import Activty, ActivitySubject
+from models.order import OrderAuthor, OrderSubject, Order, OrderType
 
 import json
 from modules.Query import Query
@@ -103,23 +104,37 @@ async def comment_car(car_id: str):
 
   return { 'msg' : "commented!" }
 
-  # car_id = "bf20d0e1-f996-479c-a719-37ad1977ce72"
-  # user = User.objects.only("name", "surname", "_id").get(_id="4bce3fd8-7c5a-4758-ad0e-a73ea0e4664c")
 
-  # print("Run!")
+@app.post("/api/car/car_id/orders")
+def create_order(order: OrderType, car_id: str, response: Response, request: Request):
 
-  # # Create new comment
-  # comment = Comment()
-  # comment.comment = "magari manqanaa"
-  # comment.car = car_id
-  
-  # # Create author
-  # user = {}
-  # # user.user = current_user._id
-  # # user.surname = current_user.surname
-  # # user.name = current_user.name
+  # Get logged in user
+  car = Car.objects.only("title", "model").get(_id=car_id)
+  user = User.objects.only("name", "surname", "_id").get(_id="4bce3fd8-7c5a-4758-ad0e-a73ea0e4664c")
 
- 
+  # Initialize new order
+  order = Order()
+  order.total = 200
+  order.start = "2020"
+  order.end = "2020"
+
+  # Append buyer
+  order_user = OrderAuthor()
+  order_user.name = user.name
+  order_user.author = user._id
+  order_user.surname = user.surname
+  order.user = order_user
+
+  # Append car
+  order_subject = OrderSubject()
+  order_subject.car = car._id
+  order_subject.model = car.model
+  order_subject.title = car.title
+  order.subject = order_subject
+
+  order.save()
 
 
-  # return { "ms" :"commenting on car!" }
+  return { 'mgs' : "order registerd!" }
+
+

@@ -26,6 +26,11 @@ from models.shared.avatar import Avatar
 from pydantic import BaseModel
 
 
+class OrderType(BaseModel):
+  total: int
+  start: str
+  end: str
+
 
 class OrderAuthor(mongoengine.EmbeddedDocument):
     author = mongoengine.UUIDField(binary=False)
@@ -45,13 +50,13 @@ class Order(mongoengine.Document):
   user = mongoengine.EmbeddedDocumentField(OrderAuthor)
   subject = mongoengine.EmbeddedDocumentField(OrderSubject)
   total = mongoengine.IntField()
-  start =  mongoengine.DateTimeField()
-  end =  mongoengine.DateTimeField()
+  start =  mongoengine.StringField()
+  end =  mongoengine.StringField()
   created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
 
   meta = {
     'indexes': [
-        {'fields': ['user']}
+        {'fields': ['user.author']}
       ]
   }
 
