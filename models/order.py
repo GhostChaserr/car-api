@@ -9,9 +9,6 @@ import hashlib
 import base64
 import datetime
 
-
-
-
 # Load shared models
 from models.shared.avatar import Avatar, AvatarType
 
@@ -33,15 +30,15 @@ class OrderType(BaseModel):
 
 
 class OrderAuthor(mongoengine.EmbeddedDocument):
-    author = mongoengine.UUIDField(binary=False)
-    name = mongoengine.StringField()
-    surname = mongoengine.StringField()
+  author = mongoengine.UUIDField(binary=False)
+  name = mongoengine.StringField()
+  surname = mongoengine.StringField()
 
 
 class OrderSubject(mongoengine.EmbeddedDocument):
-    car = mongoengine.UUIDField(binary=False)
-    title = mongoengine.StringField()
-    model = mongoengine.StringField()
+  car = mongoengine.UUIDField(binary=False)
+  title = mongoengine.StringField()
+  model = mongoengine.StringField()
 
 class Order(mongoengine.Document):
 

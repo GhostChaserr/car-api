@@ -20,6 +20,7 @@ from typing import List, Dict
 from models.shared.photo import Photo
 from models.shared.avatar import Avatar
 from pydantic import BaseModel
+from models.user import User
 
 
 class CommentType(BaseModel):
@@ -39,8 +40,12 @@ class Comment(mongoengine.Document):
   _id = mongoengine.UUIDField(binary=False, primary_key=True)
   comment = mongoengine.StringField()
   car =  mongoengine.UUIDField(binary=False)
+  channel =  mongoengine.UUIDField(binary=False)
   author = mongoengine.EmbeddedDocumentField(CommentAuthor)
+  upvotes = mongoengine.ListField(mongoengine.UUIDField(binary=False))
+  downvotes = mongoengine.ListField(mongoengine.UUIDField(binary=False))
   created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
+  
   meta = {
     'indexes': [
         {'fields': ['car']}

@@ -2,7 +2,7 @@
 
 # Enable reading env variables
 from fastapi import FastAPI
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from mongoengine import connect
 from starlette.graphql import GraphQLApp
 import graphene
@@ -10,10 +10,10 @@ import graphene
 
 
 # Connect to db
-connect('car-api2')
+connect('youtube-clone')
 
 # Enable reading env variables
-load_dotenv()
+# load_dotenv()
 
 # Load Graphql Operations
 from graph.Query import Query
@@ -36,3 +36,4 @@ app.add_route("/graphql", GraphQLApp(schema=schema))
 # Register routes
 import routes.cars
 import routes.users
+import routes.channels

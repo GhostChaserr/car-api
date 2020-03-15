@@ -9,6 +9,7 @@ import datetime
 from models.shared.avatar import Avatar, AvatarType
 from pydantic import BaseModel
 from typing import List, Dict
+# from .channel import Channel
 
 
 # Login payload
@@ -39,6 +40,9 @@ class User(mongoengine.Document):
   avatar = mongoengine.EmbeddedDocumentField(Avatar)
   role = mongoengine.StringField()
   created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
+  channels = mongoengine.ListField(mongoengine.UUIDField(binary=False, primary_key=True))
+  following = mongoengine.ListField(mongoengine.UUIDField(binary=False, primary_key=True))
+
   meta = {
     'indexes': [
         {'fields': ['email'], 'unique': True}

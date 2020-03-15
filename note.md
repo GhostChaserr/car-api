@@ -27,3 +27,56 @@
     
 # Start server
 uvicorn main:app --reload
+
+
+```
+    ------------------
+        CHANNEL ENDPOINTS
+    ------------------
+```
+
+# Publish new video
+> POST - /api/channels/chanel_id/videos 
+{
+	"name": "videoname",
+	"summary": "videosummary",
+	"path": "bucket.mp5",
+	"filename": "bucjet.m5.me.child",
+	"tags": ["development"],
+	"thumbnail":{
+		"path":"path",
+		"filename":"filename"
+	}
+}
+
+# Create channel
+> POST /api/channels
+{
+  "name": "channel name",
+  "summary": "channel summary",
+  "tags": [
+    "channel tag"
+  ]
+}
+
+# Update channel
+> PUT /api/channels/channel_id/action=update
+{
+  "name": "updated",
+  "summary": "updated",
+  "tags": [
+    "updated"
+  ]
+}
+
+# Follow channel
+> PUT /api/channels/channel_id/action=update
+{
+
+}
+
+# Unfollow channel
+> PUT /api/channels/channel_id/action=update
+{
+
+}
