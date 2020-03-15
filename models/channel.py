@@ -23,6 +23,7 @@ class Channel(mongoengine.Document):
   summary = mongoengine.StringField(max_length=180)
   tags = mongoengine.ListField(mongoengine.StringField(max_length=50))
   followers = mongoengine.ListField(mongoengine.UUIDField(binary=False))
+  admins = mongoengine.ListField(mongoengine.UUIDField(binary=False))
   created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
 
   def save(self,  *args, **kwargs):

@@ -10,6 +10,8 @@
       [x] POST - Register user
       [x] POST - Login user
       [x] GET  - Query logged in user
+      [x] POST - Create new channel
+      [x] PUT - update channel
     [] Order routes
       [] GET - Paginated list of user orders
       [] GET - Single order
@@ -24,6 +26,7 @@
     [x] Query module
     [x] Auth module
     [] Error module
+  
     
 # Start server
 uvicorn main:app --reload

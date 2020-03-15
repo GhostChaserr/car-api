@@ -9,17 +9,30 @@ from models.channel import Channel, ChannelType
 from models.shared.photo import Photo, PhotoType
 from models.video import Video, VideoType
 
+# Load helper modules
+from modules.Auth import Auth
+from modules.Query import Query
+from modules.Util import Util
 
 
+auth_module = Auth()
+util_module = Util()
 
 @app.post('/api/channels')
 def create_channel(channel_payload: ChannelType, request: Request, response: Response):
+
+  # Get logged in user
+  user = auth_module.get_me(request=request)
+
+  if user is None:
+    return { "msg": "access denied!" }
 
   # Channel fields
   channel = Channel()
   channel.name = channel_payload.name
   channel.summary = channel_payload.summary
   channel.tags = channel_payload.tags
+  channel.admins = [user.get("_id")]
   
   # Channel cover 
   cover = Photo()
@@ -39,12 +52,24 @@ def update_channel(
   channel_id: str,
   request: Request,
   response: Response,
-  action: str = Query(None, max_length=10)
+  action: str
 ):
 
-  if action == 'update':
+  # Get logged in user
+  user = auth_module.get_me(request=request)
 
-    # Update 
+  if user is None:
+    response.status_code = status.HTTP_401_UNAUTHORIZED
+    return util_module.generate_response_context(status=403, error='access denied!', data=None)
+
+  if action == 'update':
+    
+    # Check ownership
+    if not Channel.objects(pk=channel_id, admins__contains= user.get("_id")):
+      response.status_code = status.HTTP_403_FORBIDDEN
+      return util_module.generate_response_context(status=403, error='access denied! now owner', data=None)
+
+    # Update
     Channel.objects(_id=channel_id).update(
       set__name= channel_payload.name,
       set__summary=channel_payload.summary,
@@ -56,21 +81,15 @@ def update_channel(
   
   if action == 'follow':
     
-    # Logged in user id
-    user_id = "8da9d897-801d-4372-9fff-0b30d584ad16"
-
     # Add new follower
-    Channel.objects(pk=channel_id).update(add_to_set__followers = [user_id]);
+    Channel.objects(pk=channel_id).update(add_to_set__followers = [user.get("_id")]);
     
     return { "msg" : "follow channel" }
   
   if action == 'unfollow':
 
-    # Logged in user id
-    user_id = "8da9d897-801d-4372-9fff-0b30d584ad16"
-
     # Add new follower
-    Channel.objects(pk=channel_id).update(pull__followers = user_id);
+    Channel.objects(pk=channel_id).update(pull__followers = user.get("_id"));
 
     return { "msg": "unfollow channel" }
   
@@ -81,6 +100,12 @@ def update_channel(
 
     # Return response
     return { "msg": "deleted!" }
+  
+  if action == 'add-admin':
+
+    return { "case": "assign admin to channel" }
+
+
   
   # No action was provided
   return { "msg": "provide action query parameter!" }
