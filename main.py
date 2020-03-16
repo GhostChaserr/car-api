@@ -37,3 +37,4 @@ app.add_route("/graphql", GraphQLApp(schema=schema))
 import routes.cars
 import routes.users
 import routes.channels
+import routes.videos

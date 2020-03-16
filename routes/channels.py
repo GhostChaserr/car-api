@@ -8,6 +8,7 @@ import uuid
 from models.channel import Channel, ChannelType
 from models.shared.photo import Photo, PhotoType
 from models.video import Video, VideoType
+from models.comment import Comment, CommentAuthor, CommentType
 
 # Load helper modules
 from modules.Auth import Auth
@@ -145,16 +146,86 @@ def publish_video(video_payload: VideoType, channel_id: str,request: Request, re
 
   return { "msg": "publishing videos!" }
 
-@app.put('/api/channels/{channel_id}/videos/{vide_id}')
-def update_video(request: Request, response: Response):
+@app.put('/api/videos/{video_id}')
+def update_video(
+  comment_payload: CommentType,
+  video_id: str,
+  request: Request, 
+  response: Response,
+  action: str
+):
+
+  user = auth_module.get_me(request=request)
+
+  if user is None:
+    response.status_code = status.HTTP_401_UNAUTHORIZED
+    return util_module.generate_response_context(status=403, error='access denied!', data=None)
+
+  # Update video
+  if action == 'update':
+    return { "msg": "update video!" }
+
+  # Trash video
+  if action == 'trash':
+
+    # Perform clean delete
+    Video.objects(pk=video_id).update(set__status="deleted")
+    
+    return { "msg": "trashed" }
+
+
+  if action == 'upvote':
+
+    # Push user to upvotes arrat
+    Video.objects(pk=video_id).update(
+      add_to_set__upvotes=[user.get("_id")],
+      pull__downvotes=user.get("_id")
+    )
+
+    return { "msg": "upvoting video" }
+  
+  if action == 'downvote':
+
+    # Push user to downvotes array
+    Video.objects(pk=video_id).update(
+      add_to_set__downvotes=[user.get("_id")],
+      pull__upvotes=user.get("_id"),
+    );
+
+    return  { "msg": "downvote video" }
+  
+  if action == 'comment':
+
+    # Initialize comment
+    comment = Comment()
+    comment.video = video_id
+    comment.comment = comment_payload.comment
+
+    # Initialize author
+    author = CommentAuthor()
+    author.name = user.get("name")
+    author.surname = user.get("surname")
+    author.user = user.get("_id")
+
+    # Append author and save
+    comment.author = author
+    comment.save()
+
+    return { "msg" : "comment added!" }
+
+
+
+  # Provide action
   return { "msg" : "updating video!"}
 
 
-@app.delete('/api/channels/{channel_id}/videos/{vide_id}')
+@app.delete('/api/videos/{video_id}')
 def delete_video(request: Request, response: Response):
   return { "msg": "delete video" }
 
   
+
+
 
 
 

@@ -40,7 +40,7 @@ class Comment(mongoengine.Document):
   _id = mongoengine.UUIDField(binary=False, primary_key=True)
   comment = mongoengine.StringField()
   car =  mongoengine.UUIDField(binary=False)
-  channel =  mongoengine.UUIDField(binary=False)
+  video =  mongoengine.UUIDField(binary=False)
   author = mongoengine.EmbeddedDocumentField(CommentAuthor)
   upvotes = mongoengine.ListField(mongoengine.UUIDField(binary=False))
   downvotes = mongoengine.ListField(mongoengine.UUIDField(binary=False))
@@ -48,7 +48,7 @@ class Comment(mongoengine.Document):
   
   meta = {
     'indexes': [
-        {'fields': ['car']}
+        {'fields': ['video']}
       ]
   }
 

@@ -1,5 +1,6 @@
 
 import mongoengine
+from mongoengine import signals
 import datetime
 import uuid
 from pydantic import BaseModel
@@ -32,7 +33,7 @@ class Video(mongoengine.Document):
   upvotes = mongoengine.ListField(mongoengine.UUIDField(binary=False))
   downvotes = mongoengine.ListField(mongoengine.UUIDField(binary=False))
   created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
-
+  status = mongoengine.StringField(max_length=60, default="active")
 
   def save(self,  *args, **kwargs):
     
@@ -41,4 +42,3 @@ class Video(mongoengine.Document):
 
     # Proceed save
     super(Video, self).save(*args, **kwargs)
-

@@ -12,21 +12,33 @@
       [x] GET  - Query logged in user
       [x] POST - Create new channel
       [x] PUT - update channel
-    [] Order routes
-      [] GET - Paginated list of user orders
-      [] GET - Single order
-      [] POST - Register new order
+        ?action=action_type
+      [x] PUT - update video
+        ?action=action_type
+      
   [X] Authentication
     [x] Sign up
       [x] Password hashing
       [x] Token generation
     [x] Sign in
-    [x] Query loggged in user
+    [x] Me query
   [] Helpers
     [x] Query module
     [x] Auth module
     [] Error module
-  
+  [] Actions
+    [X] Video 
+      [x] Upload video
+      [x] Update video
+      [x] Comment video
+      [x] Upvote video
+      [x] Downvote video
+    [X] Channel
+      [x] Create channel
+      [x] Update channel
+      [x] Delete channel
+      [x] Follow channel
+      [x] Unfollow channel
     
 # Start server
 uvicorn main:app --reload
@@ -37,20 +49,6 @@ uvicorn main:app --reload
         CHANNEL ENDPOINTS
     ------------------
 ```
-
-# Publish new video
-> POST - /api/channels/chanel_id/videos 
-{
-	"name": "videoname",
-	"summary": "videosummary",
-	"path": "bucket.mp5",
-	"filename": "bucjet.m5.me.child",
-	"tags": ["development"],
-	"thumbnail":{
-		"path":"path",
-		"filename":"filename"
-	}
-}
 
 # Create channel
 > POST /api/channels
@@ -73,13 +71,57 @@ uvicorn main:app --reload
 }
 
 # Follow channel
-> PUT /api/channels/channel_id/action=update
+> PUT /api/channels/channel_id/action=follow
 {
 
 }
 
 # Unfollow channel
-> PUT /api/channels/channel_id/action=update
+> PUT /api/channels/channel_id/action=unfollow
+{
+
+}
+
+```
+    ------------------
+        CHANNEL ENDPOINTS
+    ------------------
+```
+
+# Publish new video
+> POST - /api/channels/chanel_id/videos 
+{
+	"name": "videoname",
+	"summary": "videosummary",
+	"path": "bucket.mp5",
+	"filename": "bucjet.m5.me.child",
+	"tags": ["development"],
+	"thumbnail":{
+		"path":"path",
+		"filename":"filename"
+	}
+}
+
+# Comment video
+api/videos/video_id?action=comment
+{
+	"comment": "what a nice comment"
+}
+
+# Upvote video
+api/videos/video_id?action=upvote
+{
+
+}
+
+# Downvote video
+api/videos/video_id?action=downvote
+{
+
+}
+
+# Trash video
+api/videos/vide_id?action=trash
 {
 
 }
